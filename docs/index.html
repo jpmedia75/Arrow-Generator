@@ -163,25 +163,27 @@
 <div class="controls">
 <!-- Line & head presets -->
 <div class="control-group">
-<label for="presets">Line Presets:</label>
+<label for="presets">Quick Actions:</label>
 <select id="presets">
-<option value="">Choose a line preset</option>
-<option value="shortThick">Short Thick</option>
-<option value="longThin">Long Thin</option>
-<option value="curved">Curved</option>
-<option value="straight">Straight</option>
+<option value="">Select an action...</option>
+<option value="resetLine">Reset Line</option>
+<option value="resetStyles">Reset Styles</option>
+<option value="recenter">Re-centre</option>
+<option value="straighten">Straighten</option>
+<option value="flip">Flip</option>
 </select>
 </div>
 <div class="control-group">
 <label for="headPresets">Head Presets:</label>
 <select id="headPresets">
-<option value="">Choose a head preset</option>
-<option value="small">Small Arrowhead</option>
-<option value="large">Large Arrowhead</option>
-<option value="wide">Wide Head</option>
-<option value="sharp">Sharp Head</option>
-<option value="vshape">V‑Shaped Head</option>
-<option value="circle">Solid Circle</option>
+  <option value="">Choose a head preset</option>
+  <option value="default">Default Arrowhead</option>
+  <option value="small">Small Arrowhead</option>
+  <option value="large">Large Arrowhead</option>
+  <option value="wide">Wide Head</option>
+  <option value="sharp">Sharp Head</option>
+  <option value="vshape">V‑Shaped Head</option>
+  <option value="circle">Solid Circle</option>
 </select>
 </div>
 <!-- Line style -->
@@ -269,19 +271,47 @@
   </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-    /* ----------  Line preset dropdown ---------- */
-    function setLinePreset(len, width, curve) {
-      lengthSlider.value = lengthInput.value = len;
-      widthSlider.value  = widthInput.value  = width;
-      curvatureSlider.value = curvatureInput.value = curve;
-      updateArrow();
-    }
+    /* ----------  Quick Actions dropdown ---------- */
     document.getElementById('presets').addEventListener('change', e => {
-      const p = e.target.value;
-      if (p === 'shortThick')      setLinePreset(90, 30, 0);
-      else if (p === 'longThin')   setLinePreset(900, 5, 0);
-      else if (p === 'curved')     setLinePreset(250, 10, 0.6);
-      else if (p === 'straight')   setLinePreset(400, 12, 0);
+      const action = e.target.value;
+
+      if (action === 'resetLine') {
+        // Reset all main controls to default values
+        lengthSlider.value = lengthInput.value = 160;
+        widthSlider.value = widthInput.value = 5;
+        curvatureSlider.value = curvatureInput.value = 0;
+        rotationSlider.value = rotationInput.value = 0;
+        headLengthSlider.value = headLengthInput.value = 30;
+        headWidthSlider.value = headWidthInput.value = 25;
+        arrowParams.offsetX = 0;
+        arrowParams.offsetY = 0;
+        document.getElementById('headPresets').value = 'default';
+        document.getElementById('lineStyle').value = 'standard';
+        rightAngleDownChk.checked = false;
+        rightAngleUpChk.checked = false;
+        bendPosSlider.value = bendPosInput.value = 50;
+      }
+      else if (action === 'resetStyles') {
+        document.getElementById('headPresets').value = 'default';
+        document.getElementById('lineStyle').value = 'standard';
+        headLengthSlider.value = headLengthInput.value = 30;
+        headWidthSlider.value = headWidthInput.value = 25;
+        arrowParams.headType = 'filled';
+      }
+      else if (action === 'recenter') {
+        arrowParams.offsetX = 0;
+        arrowParams.offsetY = 0;
+      }
+      else if (action === 'straighten') {
+        curvatureSlider.value = curvatureInput.value = 0;
+      }
+      else if (action === 'flip') {
+        arrowParams.rotation = (arrowParams.rotation + 180) % 360;
+        rotationSlider.value = rotationInput.value = arrowParams.rotation;
+      }
+
+      updateArrow();
+      e.target.value = ''; // Reset dropdown
     });
 
     /* ----------  Element refs ---------- */
@@ -505,7 +535,12 @@
     /* ----------  Head preset dropdown ---------- */
     document.getElementById('headPresets').addEventListener('change',e=>{
       const sel=e.target.value;
-      if(sel==='small'){          headLengthSlider.value=headLengthInput.value=20;  headWidthSlider.value=headWidthInput.value=10; arrowParams.headType='filled'; }
+      if(sel==='default'){ 
+        headLengthSlider.value = headLengthInput.value = 30;  
+        headWidthSlider.value = headWidthInput.value = 25; 
+        arrowParams.headType = 'filled'; 
+      }
+      else if(sel==='small'){          headLengthSlider.value=headLengthInput.value=20;  headWidthSlider.value=headWidthInput.value=10; arrowParams.headType='filled'; }
       else if(sel==='large'){     headLengthSlider.value=headLengthInput.value=50;  headWidthSlider.value=headWidthInput.value=30; arrowParams.headType='filled'; }
       else if(sel==='wide'){      headLengthSlider.value=headLengthInput.value=30;  headWidthSlider.value=headWidthInput.value=50; arrowParams.headType='filled'; }
       else if(sel==='sharp'){     headLengthSlider.value=headLengthInput.value=50;  headWidthSlider.value=headWidthInput.value=10; arrowParams.headType='filled'; }
