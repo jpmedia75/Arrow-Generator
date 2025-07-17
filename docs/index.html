@@ -282,8 +282,6 @@
         widthSlider.value = widthInput.value = 5;
         curvatureSlider.value = curvatureInput.value = 0;
         rotationSlider.value = rotationInput.value = 0;
-        headLengthSlider.value = headLengthInput.value = 30;
-        headWidthSlider.value = headWidthInput.value = 25;
         arrowParams.offsetX = 0;
         arrowParams.offsetY = 0;
         document.getElementById('headPresets').value = 'default';
@@ -586,8 +584,6 @@
       else if(sel==='circle'){    headLengthSlider.value=headLengthInput.value=40;  headWidthSlider.value=headWidthInput.value=40; arrowParams.headType='circle'; }
       else if(sel==='vshape'){    headLengthSlider.value=headLengthInput.value=40;  headWidthSlider.value=headWidthInput.value=20; arrowParams.headType='vshape'; }
       else if(sel==='doublearrow'){ 
-        headLengthSlider.value = headLengthInput.value = 30;  
-        headWidthSlider.value = headWidthInput.value = 25; 
         arrowParams.headType = 'doublearrow'; 
         if (document.getElementById('lineStyle').value === 'gradient') {
           document.getElementById('lineStyle').value = 'standard'; 
