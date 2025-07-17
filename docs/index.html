@@ -184,6 +184,7 @@
   <option value="sharp">Sharp Head</option>
   <option value="vshape">V‑Shaped Head</option>
   <option value="circle">Solid Circle</option>
+  <option value="doublearrow">Double Arrow</option>
 </select>
 </div>
 <!-- Line style -->
@@ -297,6 +298,7 @@
         headLengthSlider.value = headLengthInput.value = 30;
         headWidthSlider.value = headWidthInput.value = 25;
         arrowParams.headType = 'filled';
+        document.getElementById('lineStyle').querySelector('option[value="gradient"]').disabled = false;
       }
       else if (action === 'recenter') {
         arrowParams.offsetX = 0;
@@ -502,6 +504,40 @@
         ctx.arc(cxHead, cyHead, r, 0, Math.PI*2);
         ctx.fillStyle = arrowParams.color;
         ctx.fill();
+      } else if (arrowParams.headType === 'doublearrow') {
+        // Front arrowhead
+        ctx.beginPath();
+        ctx.moveTo(tipX, tipY);
+        ctx.lineTo(baseX + nx * (headW / 2), baseY + ny * (headW / 2));
+        ctx.lineTo(baseX - nx * (headW / 2), baseY - ny * (headW / 2));
+        ctx.closePath();
+        ctx.fillStyle = arrowParams.color;
+        ctx.globalAlpha = 0.94;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        // Reverse arrowhead at line start (curvature-aware)
+        ctx.beginPath();
+        let backUx, backUy;
+        if (arrowParams.rightAngle) {
+          backUx = 1;
+          backUy = 0;
+        } else {
+          let dx = 2 * (shaftLenTot / 2);
+          let dy = 2 * (arrowParams.curvature * arrowParams.length);
+          let len = Math.hypot(dx, dy);
+          backUx = dx / len;
+          backUy = dy / len;
+        }
+        const backBaseX = 0;
+        const backBaseY = 0;
+        const backTipX = backBaseX - backUx * headLen;
+        const backTipY = backBaseY - backUy * headLen;
+        ctx.moveTo(backTipX, backTipY);
+        ctx.lineTo(backBaseX + (-backUy) * (headW / 2), backBaseY + backUx * (headW / 2));
+        ctx.lineTo(backBaseX - (-backUy) * (headW / 2), backBaseY - backUx * (headW / 2));
+        ctx.closePath();
+        ctx.fill();
       } else {
         ctx.beginPath();
         ctx.moveTo(tipX, tipY);
@@ -535,6 +571,9 @@
     /* ----------  Head preset dropdown ---------- */
     document.getElementById('headPresets').addEventListener('change',e=>{
       const sel=e.target.value;
+      // Always re-enable gradient option before preset logic
+      document.getElementById('lineStyle').querySelector('option[value="gradient"]').disabled = false;
+
       if(sel==='default'){ 
         headLengthSlider.value = headLengthInput.value = 30;  
         headWidthSlider.value = headWidthInput.value = 25; 
@@ -546,6 +585,15 @@
       else if(sel==='sharp'){     headLengthSlider.value=headLengthInput.value=50;  headWidthSlider.value=headWidthInput.value=10; arrowParams.headType='filled'; }
       else if(sel==='circle'){    headLengthSlider.value=headLengthInput.value=40;  headWidthSlider.value=headWidthInput.value=40; arrowParams.headType='circle'; }
       else if(sel==='vshape'){    headLengthSlider.value=headLengthInput.value=40;  headWidthSlider.value=headWidthInput.value=20; arrowParams.headType='vshape'; }
+      else if(sel==='doublearrow'){ 
+        headLengthSlider.value = headLengthInput.value = 30;  
+        headWidthSlider.value = headWidthInput.value = 25; 
+        arrowParams.headType = 'doublearrow'; 
+        if (document.getElementById('lineStyle').value === 'gradient') {
+          document.getElementById('lineStyle').value = 'standard'; 
+        }
+        document.getElementById('lineStyle').querySelector('option[value="gradient"]').disabled = true;
+      }
       updateArrow();
     });
 
